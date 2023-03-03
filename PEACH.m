@@ -535,7 +535,6 @@ writematrix(export_table, "Outputs/Final_PDFs.csv")
 writetable(stats_table, "Outputs/Final_PDFs_stats.csv")
 
 %Visualization figures.
-saveas (figure(900), fullfile("Outputs/DetectedPeaks.pdf"),"pdf")
 saveas (figure(4500), fullfile("Outputs/FinalPDFs.pdf"),"pdf")
 
 %Summary
