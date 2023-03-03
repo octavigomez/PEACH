@@ -1,0 +1,9 @@
+﻿Event_num;Site;Event_date_old;Error;Event_Date_young;Error_1
+a1;Site A;-500;30;1200;0
+a2;Site A;-3000;50;-500;30
+a3;Site A;-3000;50;-500;30
+a4;Site A;-3000;50;-500;30
+b1;Site B;-400;50;900;10
+b2;Site B;-2500;50;-900;50
+b3;Site B;-4300;50;-2500;50
+b4;Site B;-5600;30;-4300;50
