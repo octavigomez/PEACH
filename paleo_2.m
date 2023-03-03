@@ -11,7 +11,7 @@ elseif oldest_unfaulted <max(x_allsites.Event_Date_young) & x_allsites.Error_1 ~
 end
 
 y1=pdf('norm',time, data_old, sd_data_old);
-y2=pdf('norm', time, historical_date, sd_historical);
+y2=pdf('norm', time, oldest_unfaulted, sd_oldest_unfaulted);
 n1 = round(normrnd(data_old, sd_data_old, s, 1), 0);
 n2 =round(normrnd(oldest_unfaulted , sd_oldest_unfaulted , s, 1), 0);
 

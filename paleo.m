@@ -11,7 +11,7 @@ n2 =round(normrnd(data_young, sd_data_young, s, 1), 0);
 for j=1:s                                               
     range = min([n1(j),n2(j)]):max([n1(j),n2(j)]);           
     [val, pos] = intersect(time, range);                
-    h1(pos(1):pos(end), j) = 1;                        
+    h1(pos(1):pos(end), j) = 1;
 end
 
 %Sum and normalize the probability of all ranges

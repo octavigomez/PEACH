@@ -1,4 +1,5 @@
 %% PEACH. Earthquake chronology modelling from paleoseismic data
+% This code is designed to use PEACH with OxCal output chronologies as inputs
 
 %Authors: Octavi Gómez, Bruno Pace, Francesco Visini
 %Year: 2022-2023
@@ -14,10 +15,11 @@ set(0, 'defaultFigureRenderer', 'painters')
 set(groot,'DefaultFigureGraphicsSmoothing','off')
 
 pathin = 'Inputs';
-x_allsites = readtable(fullfile(pathin, "Example.csv"));
+Oxcal = readtable(fullfile(pathin, "Weber.csv"));
 site_specs = readtable (fullfile(pathin,"site_specs.txt"));
 
-%% Read site specifications from input file and create respective variables
+
+% Read site specifications from input file and create respective variables
 trunc = site_specs.sigma_level;
 if trunc == 1
     trunc_level = [15.9 84.1];
@@ -29,84 +31,46 @@ elseif trunc == 0
     trunc_level = [0 100];
 end
 
-oldest_faulted= site_specs.oldest_faulted;
-sd_oldest_faulted = site_specs.sd_faulted;
-s = site_specs.seed;
-
-
-%% Calculate event PDFs based on the paleoseismic site variable
-
-%The iteration is done site by site
-[sites, IA, IC] = unique(x_allsites.Site, "stable");
+% Extract OxCal PDFs and put them in the format to be understood by the code.
+[sites, IA, IZ] = unique (Oxcal.site, "stable");
+time = min(Oxcal.value):0.5:max(Oxcal.value);
 for nsite = 1:size(sites)
-u = strcmp(x_allsites.Site, sites(nsite));
-x = x_allsites(u,:);
-youngest_age=2022;
-time = min(round(x_allsites.Event_date_old,0)-round(x_allsites.Error,0).*3):youngest_age;
-column = 0;
-
-if isnan(site_specs.oldest_faulted);
-     [oldest_faulted, ind] = min(x.Event_date_old);
-     sd_oldest_faulted = x.Error(ind);
-     if isnan(oldest_faulted) | sd_oldest_faulted==0
-        [oldest_faulted, ind2] = min(x_allsites.Event_date_old);
-        sd_oldest_faulted = x_allsites.Error(ind2);
-   end
-end
-
-%Sites formed by all NaNs are removed from the dataset
- remove = find(isnan(x.Event_date_old) & isnan(x.Event_Date_young));
- if length(remove) == size(x,1)
- x(remove,:) =[];
- end
-
-%Loop to extract the age data from their respective variables referenced to each site.
-for ii = 1:size(x)-1
-    if isnan(x.Event_Date_young(ii)) & isnan(x.Event_Date_young(ii+1)) & x.Event_date_old(ii) ~= x.Event_date_old(ii+1)
-        x.Event_Date_young(ii+1) = x.Event_date_old(ii);
-        x.Error_1(ii+1) = x.Error(ii);
-    elseif isnan(x.Event_date_old(ii)) & isnan(x.Event_date_old(ii+1)) & x.Event_Date_young(ii) ~= x.Event_Date_young(ii+1)
-        x.Event_date_old(ii) = x.Event_Date_young(ii+1);
-        x.Error(ii) = x.Error_1(ii+1);
+    u = strcmp(Oxcal.site, sites(nsite));
+    x = unique(Oxcal(u,:), "stable");
+    youngest_age=2022;
+    event= unique(x.name, "stable");
+    sizeini =0;
+    sizes = 0;
+    
+    for nevent = 1:size(event)
+        u2 = strcmp(x.name, event(nevent));
+        events = find(u2);
+        idx_time = x.value(events)';
+        time_loc = ismember(time, idx_time); 
+        time_loc = find(time_loc);
+        ns = x.n(events(1));
+        %Repeat event in case one PDF from Oxcal represents more than 1 event occurrence
+        if ns> 1
+            sizeini = sizes+(ns-1);
+            sizes = sizeini+(ns-1);
+            outs(time_loc,nevent, nsite) = x.probability(events);
+            outs_pos = find(outs(:, nevent, nsite));
+            output(1:size(outs,1), nevent, nsite) = interp1(outs_pos, outs(outs_pos, nevent, nsite), ...
+                1:numel(outs(:, nevent, nsite)));
+            outputs(1:size(outs_2,1), sizeini:sizes, nsite) = repmat(output(:,nevent, nsite), [1, ns]);
+        elseif ns==1
+            sizes = sizes+1;
+            outs_2(time_loc,nevent,nsite) =  x.probability(events);
+            outs_pos = find(outs_2(:, nevent, nsite));
+            output(1:size(outs_2,1), nevent, nsite) = interp1(outs_pos, outs_2(outs_pos, nevent, nsite), ...
+                1:numel(outs_2(:, nevent, nsite)));
+            outputs(1:size(outs_2,1), sizes, nsite) = output(:, nevent, nsite);
+        end
     end
 end
 
-for i=1:size(x)
-    h1=[];
-    h1(1:length(time),1) = 0; 
-    data_old = round(x.Event_date_old(i),0);
-    sd_data_old = round(x.Error(i),0);
-    data_young = round(x.Event_Date_young(i),0);
-    sd_data_young = round(x.Error_1(i),0);
-    oldest_unfaulted = site_specs.oldest_unfaulted ;
-    sd_oldest_unfaulted  = site_specs.sd_unfaulted;
-
-% Conditions depending on the constraints on the input data.
-if  ~isnan(data_old) & ~isnan(sd_data_old) & ~isnan(data_young) & ~isnan(sd_data_young)
-    run paleo
-elseif ~isnan(data_old) & ~isnan(sd_data_old) & isnan(data_young) & isnan(sd_data_young)
-    run paleo_2
-elseif isnan(data_old) & isnan(sd_data_old) & ~isnan(data_young) & ~isnan(sd_data_young)
-    run paleo_3
-end
-
-%Store all event PDFs in a 3D variable.
-column = column+1;
-sumh = sumh./sum(sumh);
-outputs(:, column, nsite) = sumh;
-
-%% Plot all event PDFs together
-
-figure (100)
-hold on
-plot (time, outputs(:,:,nsite), "Color",[0.8 0.8 0.8]);
-title("Mean distribution for the whole fault trace", "Interpreter","none", "FontSize",12, "Position", ...
-    [median(time), 1.03]);
-xlabel("Years (BCE/CE)");
-ylabel("Normalized probability");
-box on
-end
-end
+% interpolation does not work between 0 values so it gives NaN. We re-assign 0.
+outputs(isnan(outputs)) = 0;
 
 %% The event PDFs are truncated based on the sigma truncation levels set by the user.
 for kr=1:size(outputs, 3);
@@ -123,6 +87,14 @@ for kr=1:size(outputs, 3);
         else
             %Do nothing.
         end
+        figure (100)
+        hold on
+        plot (time, outputs(:,ar,kr), "Color",[0.8 0.8 0.8]);
+        title("Mean distribution for the whole fault trace", "Interpreter","none", "FontSize",12, "Position", ...
+            [median(time), 1.03]);
+        xlabel("Years (BCE/CE)");
+        ylabel("Normalized probability");
+        box on
     end
 end
 
@@ -132,19 +104,17 @@ end
 for g = 1:size(outputs, 3);
     temp(:,g) = max(outputs(:,:,g),[], 2);
 end
-temp2=mean(temp, 2);
-tempnorm = (temp2-min(temp2))./(max(temp2)-min(temp2));
-plot (time, tempnorm, "-", "LineWidth",1, "Color","black");
-hold off
+temp2=movmedian(mean(temp, 2), 110);
+tempnorm = normalize(temp2, "range");
 
 %% Find peaks in the mean probability curve
-min_prom =max(outputs);
-min_prom(min_prom==0)=nan;
-min_prom =  (min(min_prom, [], "all")/2)/max(outputs, [], "all")/2;
 
 %Using the findpeaks function from MATLAB in both directions (left to right and right to left).
+min_prom =max(outputs);
+min_prom(min_prom==0)=nan;
+min_prom =  (min(min_prom, [], "all")/2)/(max(outputs, [], "all"))/2;
 [peaks1, locs1, widths1, proms1] = findpeaks(tempnorm, time, "WidthReference","halfprom", ...
-    "MinPeakProminence",min_prom); 
+    "MinPeakProminence", min_prom); 
 pks = findpeaks(tempnorm, time, "Annotate","extents", "WidthReference","halfprom", ...
     "MinPeakProminence",min_prom);
 flipped_tempnrom =flipud(tempnorm);
@@ -156,7 +126,6 @@ for len=1:length(locs2)
     ind_locs2(len) = find(time==locs2(len));
     locs2(len) = flipped_time(ind_locs2(len));
 end
-
 locs =[locs1;fliplr(locs2)];
 locs_plateau = mean(locs(:,:));
 
@@ -207,7 +176,8 @@ new_out = [];
 
         %Analyze effective overlaps between event PDFs by using their mean and standard deviation bars.
         for a2 = 1:size(outputs,2)-1
-            cond(a2,1,k) = mean_range(a2,1,k) >= mean_range(a2+1, 1, k) & mean_range(a2, 1, k)<= mean_range(a2+1, 3, k) & mean_range(a2,2,k)<=mean_range(a2+1,1,k);
+            cond(a2,1,k) = mean_range(a2,1,k) >= mean_range(a2+1, 1, k) & mean_range(a2, 1, k)...
+            <= mean_range(a2+1, 3, k) & mean_range(a2,2,k)<=mean_range(a2+1,1,k);
             if cond(a2, 1, k) == 1
                   cond2(a2:a2+1, 1, k) =1;
             elseif cond (a2, 1, k) == 0
@@ -240,10 +210,9 @@ end
 %Remove identical final PDFs coming from noisy peaks close in time.
 [final2, indexes]= unique(final', "rows", "stable");
 final2= final2';
-finalnorm3 = final2./sum(final2,1);
+finalnorm3 = final2./sum(final2, 1);
 
 %Compute total number of PDFs that form each final PDF
-
 [minnum_events, indx_max] = max(tempnum_events,[], 2);
 Min_num_events = minnum_events(indexes);
 Num_events_site = [Min_num_events,indx_max(indexes)];
@@ -342,15 +311,15 @@ if trunc_level~=[0, 100]
     temp = sum(finalnorm4(:,2:end),2);
     index2 = find(temp(:,1)>0,1,"first");
     index3 = find(temp(:,1)>0,1,"last");
-    time_range = [finalnorm4(index2,1)-1:finalnorm4(index3,1)+1];
-    new_pdfs=finalnorm4(index2-1:index3+1, 2:end);
+    time_range = [finalnorm4(index2,1):0.5:finalnorm4(index3,1)];
+    new_pdfs=finalnorm4(index2:index3, 2:end);
     final_pdfs=[time_range',new_pdfs]';
     Set = (1:length(final_pdfs(2:end,1)))';
 elseif trunc_level  == [0, 100];
     temp = sum(finalnorm4(:,2:end),2);
     index2 = find(temp(:,1)>0,1,"first");
     index3 = find(temp(:,1)>0,1,"last");
-    time_range = [finalnorm4(index2,1):finalnorm4(index3,1)];
+    time_range = [finalnorm4(index2,1):0.5:finalnorm4(index3,1)];
     new_pdfs=finalnorm4(index2:index3, 2:end);
     final_pdfs=[time_range',new_pdfs]';
     Set = (1:length(final_pdfs(2:end,1)))';
@@ -361,173 +330,152 @@ for combo=1:size(Comb_final,2);
     Event_count_combos(combo,1:numel(cell2mat(Comb_final(:,combo)'))) = cell2mat(Comb_final(:,combo)');
 end
 Event_count_combos  = Event_count_combos';
-final_outputs = [Set,Event_count_combos,new_pdfs'];
+final_outputs = [flip(Set),Event_count_combos,new_pdfs'];
 
 %% Plot final results (PDFs)
 
 final_plot = final_outputs(:,size(Event_count_combos,2)+2:end);
 
 figure (4500);
-box on
 tiledlayout(3,1, "TileSpacing", "tight")
-step3=0;
 
 %Plot the mean distribution.
-nexttile (1)
+nexttile
 subtitle ("Mean probability distribution")
 hold on
-temp_sorted =sort(tempnorm);
-plot(time, tempnorm, "Color", "black")
+ylabel ("Probability density", "Color",[0 0 0])
+plot(time, tempnorm, "Color", "black", "LineWidth",0.2)
 scatter(locs_plateau, peaks1,"black","filled","v", "SizeData",10)
 for pks_line = 1:length(peaks1)
     plot ([locs_plateau(pks_line), locs_plateau(pks_line)], [0, peaks1(pks_line)], "Color", "black", ...
         "LineStyle","--", "LineWidth",0.1)
 end
-ylabel ("Normalized probability density")
+ylabel ("Normalized probability",  "Color",[0 0 0])
+set(gca,  "xdir", "reverse")
 xlim([min(time), max(time)]);
-ylim([0 temp_sorted(end-1)])
+ylim([0 1.05])
 xticklabels(" ")
+hold off
 set(gca, 'Layer', 'Top')
 box on
-hold off
 
-%Plot the fault chronology
 nexttile (3)
-subtitle("Fault chronology")
-hold on
-non_zeros_stored =[];
-plot(time_range, final_plot, "LineWidth", 0.05, "Color", [0.6 0.6 0.6])
-[fillhandle, msg] = jbfill(time_range, final_plot, final_plot*0, [0.3, 0.3, 0.3], [1 1 1], 0,0.2);                  %Function created by John Bockstege. --> John Bockstege (2022). Shade area between two curves (https://www.mathworks.com/matlabcentral/fileexchange/13188-shade-area-between-two-curves), MATLAB Central File Exchange. Retrieved October, 2022.
-for pdf_stats = 1:size(final_plot, 1);
-    step3= step3+1;
-    weights= final_plot(pdf_stats,:);
-    means (pdf_stats,:)= (time_range*weights')./sum(weights);
-    sigma_1(pdf_stats,:) = std(time_range, weights);
-    output_stats(pdf_stats,:)= [means(pdf_stats,:), sigma_1(pdf_stats,:)];
-    non_zeros = find(final_plot(pdf_stats,:)>0);
-    non_zeros_stored{pdf_stats} = non_zeros;
-    if length(time_range(non_zeros))>1;
-        for_box = randpdf(final_plot(pdf_stats,non_zeros), time_range(non_zeros), ...                           %Function created by Adam Niselony (Opole University of Technology, Poland) --> Adam Nieslony (2022). Random numbers from a user defined distribution (https://www.mathworks.com/matlabcentral/fileexchange/26003-random-numbers-from-a-user-defined-distribution), MATLAB Central File Exchange. Retrieved October, 2022.
-            [1, length(time_range(non_zeros))]);                                                                                            
-        quantiles_final(pdf_stats,:) = quantile(for_box,[0.25, 0.5, 0.75]);
-        mean_final(pdf_stats,:) = mean(for_box);
-        devi_final(pdf_stats,:) = std(for_box);
-    elseif length(time_range(non_zeros))==1;
-        quantiles_final(pdf_stats,:) = quantile(time_range(non_zeros),3);
-        mean_final(pdf_stats,:) = time_range(non_zeros);
-        devi_final(pdf_stats,:) = 0;
-    end
-    scatter (means(pdf_stats,:), 0, "red", "filled", "o", SizeData=10);
-    labels_events = "E" + final_outputs(pdf_stats,1)+ " ";
-    text(means(pdf_stats),max(final_plot(final_plot<max(final_plot,[], "all"))), labels_events, ...
-        "HorizontalAlignment","right", "VerticalAlignment","baseline", "Rotation",90)
-end
-plot([means, means], [0, max(final_plot,[], "all")], "LineStyle", ":","LineWidth",0.1, "Color", "r")
-ytick = gca;
-ylim ([0, max(final_plot(final_plot<max(final_plot,[], "all")))]);
-ay=gca; ay.YAxis.Exponent = -2;
-xlim([min(time), max(time)]);
-xlabel ("Years (CE)")
-ylabel("Probability density");
-set(gca, 'Layer', 'Top')
 box on
+hold on
+subtitle("Fault chronology")
+set(gca, 'Layer', 'Top')
+hold on
+plot(time_range, final_plot, "LineWidth", 0.05, "Color", [0.6 0.6 0.6])
+[fillhandle, msg] = jbfill(time_range, final_plot, final_plot*0, [0.3, 0.3, 0.3], [1 1 1], 0,0.2);                      %Function created by John Bockstege. --> John Bockstege (2022). Shade area between two curves (https://www.mathworks.com/matlabcentral/fileexchange/13188-shade-area-between-two-curves), MATLAB Central File Exchange. Retrieved October, 2022.
+nz_stored =[];
+step3=0;
+for rm = 1:size(final_plot, 1);
+    step3= step3+1;
+    weights= final_plot(rm,:);
+    means (rm,:)= (time_range*weights')./sum(weights);
+    sigma_1(rm,:) = std(time_range, weights);
+    output_stats(rm,:)= [means(rm,:), sigma_1(rm,:)];
+    nz = find(final_plot(rm,:)>0);
+    nz_stored{rm} = nz;
+    if length(time_range(nz))>1;
+        for_box = randpdf(final_plot(rm,nz), time_range(nz),[1, length(time_range(nz))]);                                                                                            %Function created by Adam Niselony (Opole University of Technology, Poland) --> Adam Nieslony (2022). Random numbers from a user defined distribution (https://www.mathworks.com/matlabcentral/fileexchange/26003-random-numbers-from-a-user-defined-distribution), MATLAB Central File Exchange. Retrieved October, 2022.
+        quantiles_final(rm,:) = quantile(for_box,[0.25, 0.5, 0.75]);
+        mean_final(rm,:) = mean(for_box);
+        devi_final(rm,:) = std(for_box);
+    elseif length(time_range(nz))==1;
+        quantiles_final(rm,:) = quantile(time_range(nz),3);
+        mean_final(rm,:) = time_range(nz);
+        devi_final(rm,:) = 0;
+        text(mean_final(rm,:), step3, "  Hist. ("+ mean_final(rm,:) + ")  ", "HorizontalAlignment","right")
+    end
+    labels_events = "E" + final_outputs(rm,1) + " ";
+    text(means(rm), max(final_plot,[], "all"), labels_events, "HorizontalAlignment","right", ...
+        "VerticalAlignment","baseline", "Rotation",90)
+end
+plot([means, means], [0, max(final_plot,[], "all")], "LineStyle", ":", "LineWidth", 0.1, "Color", "r")
+scatter (means, 0, "red", "filled", "o", SizeData=10);
+ytick = gca;
+set(gca,  "xdir", "reverse")
+ylim([0 max(final_plot,[], "all")])
+xlim([min(time), max(time)]);
+xlabel("Years (CE)")
+ylabel("Probability density");
+ay=gca; ay.YAxis.Exponent = -2;
 hold off
 
-final_pdf_stats = [Set,mean_final, devi_final, quantiles_final, Event_count_combos];
+final_rm = [Set,mean_final, devi_final, quantiles_final, Event_count_combos];
 mean_sigma_final = mean(devi_final(devi_final~=0));
 
-%Plot the event PDFs in each site to validate the model.
+% Plot the event PDFs in each site to validate the model.
 nexttile (2)
 subtitle("Input site chronologies")
 hold on
 box on
-for positive_pdfs=1:size(final_plot,1)
-    final_plot_pl = [zeros(size(final_plot,1),1), final_plot, zeros(size(final_plot,1),1)];
-    positives1 = find(final_plot_pl(positive_pdfs,:), 1, "first")-1;
-    positives2 = find(final_plot_pl(positive_pdfs,:), 1, "last")+1;
-    if trunc_level ~= [0 100];
-        final_plot_pl = final_plot;
-        positives1 = find(final_plot(positive_pdfs,:), 1, "first")-1;
-        positives2 = find(final_plot(positive_pdfs,:), 1, "last")+1;
+rg=0;
+for rr =1:length(IA)
+    step = 0;
+    ra = 1:size(outputs(:,:,rr), 2);
+    rg = rg+1;
+    step = step+1;
+    ops_1 = find(outputs(:,:,rr)>0,1, "first");
+    ops_2 = find(outputs(:,:,rr)>0,1, "last");
+    ops_1 = ops_1-1;
+    ops_2=ops_2+1;
+    ops = ops_1:ops_2;
+    indiv_pdfs = plot(time, (outputs(:,:,rr)./max(outputs(:,:,rr),[],"all"))+rr, "Color", [0.6 0.6 0.6], ...
+        "LineWidth",0.5, "LineStyle","-");
+    if length(ops)==1
+        indiv_pdfs2 = scatter(time, rr+step*(1/(length(ra)+1)), "black", "filled", "diamond", "SizeData",10);
     end
-    positives = positives1:positives2;
-    time_range_pl = time_range(1)-1:time_range(end)+1;
 end
 for rm = 1:length(means)
     rd = (means(rm)-devi_final(rm)*2):(means(rm)+devi_final(rm)*2);
     [fillhandle, msg] = jbfill(rd, zeros(1,length(rd))+nsite+1, zeros(1,length(rd)), [0.8, 0.8, 0.8], [1 1 1], 0,0.2);
 end
-rg=0;
-for rr =1:length(IA)
-    step = 0;
-    ra = find(IC==rr);
-    for xplot = length(ra):-1:1
-        rg = rg+1;
-        step = step+1;
-        ops_1 = find(outputs(:,xplot,rr)>0,1, "first");
-        ops_2 = find(outputs(:,xplot,rr)>0,1, "last");
-        ops = ops_1:ops_2;
-        if length(ops)>1
-            if trunc_level ~= [0 100]
-                ops_1 = ops_1-1;
-                ops_2=ops_2+1;
-                ops = ops_1:ops_2
-            end 
-            indiv_pdfs = plot(time(ops), (outputs(ops,xplot,rr)./max(outputs(:,:,rr),[],"all"))*(1/(size(outputs,2)+1)) ...
-                +rr+step*(1/(length(ra)+1)), "Color", [0.6 0.6 0.6], "LineWidth",0.5, "LineStyle","-");
-            base = plot(time(ops), zeros(1, length(ops))+rr+step*(1/(length(ra)+1)), "Color", [0.6 0.6 0.6], ...
-                "LineWidth",0.5, "LineStyle","-");
-        elseif length(ops)==1
-            indiv_pdfs2 = scatter(time(ops), rr+step*(1/(length(ra)+1)), ...
-                "black", "filled", "diamond", "SizeData",10);
-        end
-    end
-end
 max_point =rr+1;
 label_sites = string(sites)+"   " ;
+plot([means, means], [0, nsite+1], "LineStyle", ":","LineWidth",0.1, "Color", "r")
+text(zeros(1,rr)+max(time), [1.6:rr+0.8], label_sites, "Interpreter","none", "HorizontalAlignment","right", ...
+    "Color",[0 0 0], "Rotation",0)
 set(gca,'TickLabelInterpreter', 'none');
 yticks([1:rr]);
-plot([means, means], [0, nsite+1], "LineStyle", ":","LineWidth",0.1, "Color", "r")
-text(zeros(1,rr)+min(time), [1.6:rr+0.8], label_sites, "Interpreter","none", ...
-     "HorizontalAlignment","right", "Color",[0 0 0], "Rotation",0)
 yticklabels(" ")
-xticklabels(" ")
 ytickangle(0);
 ytick = gca;
 ytick.YRuler.TickLabelGapOffset = 5;
 ytick.YGrid = "on";
-xlim([min(time), max(time)]);
 ylim([1, max_point]);
-labels = num2str(final_outputs(:, 2:size(Event_count_combos,2)+1));
-set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 0.3 0.8]);
+set(gca,  "xdir", "reverse")
+xlim([min(time), max(time)]);
+xticklabels(" ")
+set(gca, 'Layer', 'Top')
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 0.4 0.8]);
-hold off
 
 
 %% Arithmetic mean recurrence calculation
 
-final_pdf_stats_rep =[];
+final_rm_rep =[];
 for cont = 1:size(Event_count_combos,1)
-    final_pdf_stats_cont =repelem(final_pdf_stats(cont,:),Event_count_combos(cont,1), 1);
-    final_pdf_stats_rep =[final_pdf_stats_rep;final_pdf_stats_cont];
+final_rm_cont =repelem(final_rm(cont,:),Event_count_combos(cont,1), 1);
+final_rm_rep =[final_rm_rep;final_rm_cont];
 end
 
-for inter =1:size(final_pdf_stats_rep,1)-1;
-    inter_event (inter,:)= final_pdf_stats_rep(inter+1,2)-final_pdf_stats_rep(inter,2);
-    sd_inter_event(inter,:)=((final_pdf_stats_rep(inter+1,3)^2)+(final_pdf_stats_rep(inter,3)^2))^0.5;
+for inter =1:size(final_rm_rep,1)-1;
+    inter_event (inter,:)= final_rm_rep(inter+1,2)-final_rm_rep(inter,2);
+    sd_inter_event(inter,:)=((final_rm_rep(inter+1,3)^2)+(final_rm_rep(inter,3)^2))^0.5;
 end
-mean_recurrence = mean(inter_event(4:end));
-sd_recurrence = (sum((sd_inter_event(4:end)/3).^2))^0.5;
-CV =std(inter_event(4:end))/mean_recurrence;
+     mean_recurrence = mean(inter_event(1:end));
+     sd_recurrence = (sum((sd_inter_event(1:end)/3).^2))^0.5;
+     CV =std(inter_event(1:end))/mean_recurrence;
 
 %% Ending: export outputs to folder
 
-header_time = min(time_range):max(time_range);
+header_time = min(time_range):0.5:max(time_range);
 contained_pdfs=1:size(Event_count_combos,2);
 VarNames = ["PDF ID", "N. events hyp. "+ string(contained_pdfs), string(header_time)];
 VarNames2 = ["PDF ID","Mean", "1σ", "Q25", "Q50", "Q75", "N. events hyp. "+contained_pdfs];
 export_table=[VarNames; final_outputs];
-stats_table = array2table(final_pdf_stats, 'VariableNames', VarNames2);
+stats_table = array2table(final_rm, 'VariableNames', VarNames2);
 unc_reduction = ((mean_sigma-mean_sigma_final)/mean_sigma)*100;
 
 %Table.
@@ -535,21 +483,19 @@ writematrix(export_table, "Outputs/Final_PDFs.csv")
 writetable(stats_table, "Outputs/Final_PDFs_stats.csv")
 
 %Visualization figures.
-saveas (figure(900), fullfile("Outputs/DetectedPeaks.pdf"),"pdf")
-saveas (figure(4500), fullfile("Outputs/FinalPDFs.pdf"),"pdf")
+saveas (figure(900), fullfile("Outputs/DetectedPeaks.eps"),"epsc")
+saveas (figure(4500), fullfile("Outputs/FinalPDFs.eps"),"epsc")
 
 %Summary
 disp("Summary");
 disp("- The total number of events identified in the fault is: "+ Comb_sum);
 disp("- These events are contained in a total number of final PDFs of: " + size(final_plot, 1));
-disp(" - Mean recurrence interval is " + round(mean_recurrence,0)+string(char(177))+ ...
-    round(sd_recurrence,0)*2 + " years (2σ)");
+disp(" - Mean recurrence interval is " + mean_recurrence+"+/-"+ sd_recurrence);
 disp(" - The CV of the chronology is " + CV);
-disp("- The mean of 1σ's of the site event PDFs is " + round(mean_sigma,0) + " years");
-disp("- The mean of 1σ's of the site event PDFs is " + round(mean_sigma_final,0) + " years");
-disp("- The mean of the 1σ uncertainties in your final chronology are reduced by " + ...
-    round(unc_reduction,1) + "% with respect to those of the site chronologies");
+disp("- The mean of 1σ's of the site event PDFs is " + mean_sigma + " years");
+disp("- The mean of 1σ's of the site event PDFs is " + mean_sigma_final + " years");
+disp("- The mean of the 1 sigma uncertainties in your final chronology are reduced by " + ...
+    unc_reduction + "% with respect to those of the site chronologies");
 disp("For more information check out the outputs in the /Outputs folder.");
 
 %End.
-end_msg = msgbox("Your calculation is complete!", "Success", "help");
