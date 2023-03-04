@@ -97,7 +97,7 @@ outputs(:, column, nsite) = sumh;
 
 %% Plot all event PDFs together
 
-figure (100)
+figure (1)
 hold on
 plot (time, outputs(:,:,nsite), "Color",[0.8 0.8 0.8]);
 title("Mean distribution for the whole fault trace", "Interpreter","none", "FontSize",12, "Position", ...
@@ -161,7 +161,7 @@ locs =[locs1;fliplr(locs2)];
 locs_plateau = mean(locs(:,:));
 
 %Plot the peak detection in the mean curve
-figure (900)
+figure (2)
 hold on
 scatter(locs_plateau, peaks1,"black","filled","v")
 plot(time, tempnorm, "Color", "black")
@@ -367,7 +367,7 @@ final_outputs = [Set,Event_count_combos,new_pdfs'];
 
 final_plot = final_outputs(:,size(Event_count_combos,2)+2:end);
 
-figure (4500);
+figure (3);
 box on
 tiledlayout(3,1, "TileSpacing", "tight")
 step3=0;
@@ -535,7 +535,7 @@ writematrix(export_table, "Outputs/Final_PDFs.csv")
 writetable(stats_table, "Outputs/Final_PDFs_stats.csv")
 
 %Visualization figures.
-saveas (figure(4500), fullfile("Outputs/FinalPDFs.pdf"),"pdf")
+saveas (figure(3), fullfile("Outputs/FinalPDFs.pdf"),"pdf")
 
 %Summary
 disp("Summary");
