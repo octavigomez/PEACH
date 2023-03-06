@@ -2,11 +2,6 @@
 
 %Create PDFs from the numerical dates and sample random values from them.
 
-% if historical_date<data_young
-%     historical_date= data_young;
-%     sd_historical = sd_data_young;
-% end
-
 y1=pdf('norm', time, oldest_faulted, sd_oldest_faulted);
 y2=pdf('norm',time, data_young, sd_data_young);
 n1 = round(normrnd(oldest_faulted, sd_oldest_faulted, s, 1), 0);

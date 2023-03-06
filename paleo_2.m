@@ -5,7 +5,7 @@
 if oldest_unfaulted  < data_old
     oldest_unfaulted  = data_old;
     sd_oldest_unfaulted  = sd_data_old;
-elseif oldest_unfaulted <max(x_allsites.Event_Date_young) & x_allsites.Error_1 ~=0
+elseif oldest_unfaulted <max(x_allsites.Event_date_young) & x_allsites.Error_1 ~=0
     [oldest_unfaulted , ind3] = max(x_allsites.Event_Date_young);
     sd_oldest_unfaulted  = x_allsites.Error_1(ind3);
 end
