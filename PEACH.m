@@ -45,12 +45,8 @@ time = min(round(x_allsites.Event_date_old,0)-round(x_allsites.Error,0).*3):youn
 column = 0;
 
 if isnan(site_specs.oldest_faulted)
-     [oldest_faulted, ind] = min(x.Event_date_old);
-     sd_oldest_faulted = x.Error(ind);
-     if isnan(oldest_faulted) || sd_oldest_faulted==0
-        [oldest_faulted, ind2] = min(x_allsites.Event_date_old);
-        sd_oldest_faulted = x_allsites.Error(ind2);
-     end
+     [oldest_faulted, ind] = min(x_allsites.Event_date_old);
+     sd_oldest_faulted = x_allsites.Error(ind);
 end
 
 %Sites formed by all NaNs are removed from the dataset
