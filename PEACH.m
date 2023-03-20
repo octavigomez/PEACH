@@ -415,7 +415,7 @@ for pdf_stats = 1:size(final_plot, 1)
         mean_final(pdf_stats,:) = time_range(non_zeros);
         devi_final(pdf_stats,:) = 0;
     end
-    scatter (means(pdf_stats,:), 0, "red", "filled", "o", SizeData=10);
+    scatter (means(pdf_stats,:), 0, "red", "filled", "o", "SizeData", 10);
     labels_events = "E" + final_outputs(pdf_stats,1)+ " ";
     text(means(pdf_stats),max(final_plot(final_plot<max(final_plot,[], "all"))), labels_events, ...
         "HorizontalAlignment","right", "VerticalAlignment","baseline", "Rotation",90)
