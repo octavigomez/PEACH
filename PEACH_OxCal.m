@@ -93,7 +93,7 @@ for kr=1:size(outputs, 3)
             [median(time), 1.03]);
         xlabel("Years (CE)");
         ylabel("Normalized probability");
-        box on
+        box off
     end
 end
 
@@ -139,7 +139,7 @@ set(gca,  "xdir", "reverse")
 xlabel("Years (CE)")
 ylabel("Normalized probability")
 legend ("Peaks", "Location", "best")
-box on
+box off
 hold off
 
 %% Compute final PDFs from the peaks and event PDFs
@@ -340,27 +340,9 @@ figure (3);
 tiledlayout(3,1, "TileSpacing", "tight")
 
 %Plot the mean distribution.
-nexttile
-subtitle ("Mean probability distribution")
-hold on
-ylabel ("Probability density", "Color",[0 0 0])
-plot(time, tempnorm, "Color", "black", "LineWidth",0.2)
-scatter(locs_plateau, peaks1,"black","filled","v", "SizeData",10)
-for pks_line = 1:length(peaks1)
-    plot ([locs_plateau(pks_line), locs_plateau(pks_line)], [0, peaks1(pks_line)], "Color", "black", ...
-        "LineStyle","--", "LineWidth",0.1)
-end
-ylabel ("Normalized probability",  "Color",[0 0 0])
-set(gca,  "xdir", "reverse")
-xlim([min(time), max(time)]);
-ylim([0 1.05])
-xticklabels(" ")
-hold off
-set(gca, 'Layer', 'Top')
-box on
 
 nexttile (3)
-box on
+box off
 hold on
 subtitle("Fault chronology")
 set(gca, 'Layer', 'Top')
@@ -406,10 +388,10 @@ final_rm = [Set,mean_final, devi_final, quantiles_final, Event_count_combos];
 mean_sigma_final = mean(devi_final(devi_final~=0));
 
 % Plot the event PDFs in each site to validate the model.
-nexttile (2)
+nexttile (1)
 subtitle("Input site chronologies")
 hold on
-box on
+box off
 rg=0;
 for rr =1:length(IA)
     step = 0;
@@ -421,7 +403,7 @@ for rr =1:length(IA)
     ops_1 = ops_1-1;
     ops_2=ops_2+1;
     ops = ops_1:ops_2;
-    indiv_pdfs = plot(time, (outputs(:,:,rr)./max(outputs(:,:,rr),[],"all"))+rr, "Color", [0.6 0.6 0.6], ...
+    indiv_pdfs = plot(time, (outputs(:,:,rr)./max(outputs(:,:,:),[],"all"))+rr, "Color", [0.6 0.6 0.6], ...
         "LineWidth",0.5, "LineStyle","-");
     if length(ops)==1
         indiv_pdfs2 = scatter(time, rr+step*(1/(length(ra)+1)), "black", "filled", "diamond", "SizeData",10);
@@ -433,7 +415,6 @@ for rm = 1:length(means)
 end
 max_point =rr+1;
 label_sites = string(sites)+"   " ;
-plot([means, means], [0, nsite+1], "LineStyle", ":","LineWidth",0.1, "Color", "r")
 text(zeros(1,rr)+max(time), 1.6:rr+0.8, label_sites, "Interpreter","none", "HorizontalAlignment","right", ...
     "Color",[0 0 0], "Rotation",0)
 set(gca,'TickLabelInterpreter', 'none');
@@ -450,6 +431,29 @@ xticklabels(" ")
 set(gca, 'Layer', 'Top')
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 0.4 0.8]);
 hold off
+
+nexttile (2)
+subtitle ("Mean probability distribution")
+hold on
+ylabel ("Probability density", "Color",[0 0 0])
+plot(time, tempnorm, "Color", "black", "LineWidth",0.2)
+scatter(locs_plateau, peaks1,"black","filled","v", "SizeData",10)
+for pks_line = 1:length(peaks1)
+    plot ([locs_plateau(pks_line), locs_plateau(pks_line)], [0, peaks1(pks_line)], "Color", "black", ...
+        "LineStyle","--", "LineWidth",0.1)
+end
+for rm = 1:length(means)
+    rd = (means(rm)-devi_final(rm)*2):(means(rm)+devi_final(rm)*2);
+    [fillhandle, msg] = jbfill(rd, zeros(1,length(rd))+1, zeros(1,length(rd)), [0.8, 0.8, 0.8], [1 1 1], 0,0.2);
+end
+ylabel ("Normalized probability",  "Color",[0 0 0])
+set(gca,  "xdir", "reverse")
+xlim([min(time), max(time)]);
+ylim([0 1])
+xticklabels(" ")
+hold off
+set(gca, 'Layer', 'Top')
+box off
 
 %% Arithmetic mean recurrence calculation
 

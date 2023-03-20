@@ -370,25 +370,6 @@ box on
 tiledlayout(3,1, "TileSpacing", "tight")
 step3=0;
 
-%Plot the mean distribution.
-nexttile (1)
-subtitle ("Mean probability distribution")
-hold on
-temp_sorted =sort(tempnorm);
-plot(time, tempnorm, "Color", "black")
-scatter(locs_plateau, peaks1,"black","filled","v", "SizeData",10)
-for pks_line = 1:length(peaks1)
-    plot ([locs_plateau(pks_line), locs_plateau(pks_line)], [0, peaks1(pks_line)], "Color", "black", ...
-        "LineStyle","--", "LineWidth",0.1)
-end
-ylabel ("Normalized probability density")
-xlim([min(time), max(time)]);
-ylim([0 temp_sorted(end-1)])
-xticklabels(" ")
-set(gca, 'Layer', 'Top')
-box on
-hold off
-
 %Plot the fault chronology
 nexttile (3)
 subtitle("Fault chronology")
@@ -435,7 +416,7 @@ final_stats = [Set,mean_final, devi_final, quantiles_final, Event_count_combos];
 mean_sigma_final = mean(devi_final(devi_final~=0));
 
 %Plot the event PDFs in each site to validate the model.
-nexttile (2)
+nexttile (1)
 subtitle("Input site chronologies")
 hold on
 box on
@@ -485,7 +466,6 @@ max_point =rr+1;
 label_sites = string(sites)+"   " ;
 set(gca,'TickLabelInterpreter', 'none');
 yticks(1:rr);
-plot([means, means], [0, nsite+1], "LineStyle", ":","LineWidth",0.1, "Color", "r")
 text(zeros(1,rr)+min(time), 1.6:rr+0.8, label_sites, "Interpreter","none", ...
      "HorizontalAlignment","right", "Color",[0 0 0], "Rotation",0)
 yticklabels(" ")
@@ -497,6 +477,29 @@ ytick.YGrid = "on";
 xlim([min(time), max(time)]);
 ylim([1, max_point]);
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 0.4 0.8]);
+hold off
+
+%Plot the mean distribution.
+nexttile (2)
+subtitle ("Mean probability distribution")
+hold on
+temp_sorted =sort(tempnorm);
+plot(time, tempnorm, "Color", "black")
+scatter(locs_plateau, peaks1,"black","filled","v", "SizeData",10)
+for pks_line = 1:length(peaks1)
+    plot ([locs_plateau(pks_line), locs_plateau(pks_line)], [0, peaks1(pks_line)], "Color", "black", ...
+        "LineStyle","--", "LineWidth",0.1)
+end
+for rm = 1:length(means)
+    rd = (means(rm)-devi_final(rm)*2):(means(rm)+devi_final(rm)*2);
+    [fillhandle, msg] = jbfill(rd, zeros(1,length(rd))+1, zeros(1,length(rd)), [0.8, 0.8, 0.8], [1 1 1], 0,0.2);
+end
+ylabel ("Normalized probability density")
+xlim([min(time), max(time)]);
+ylim([0 temp_sorted(end-1)])
+xticklabels(" ")
+set(gca, 'Layer', 'Top')
+box on
 hold off
 
 %% Arithmetic mean recurrence calculation
