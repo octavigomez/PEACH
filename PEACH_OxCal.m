@@ -339,6 +339,7 @@ final_plot = final_outputs(:,size(Event_count_combos,2)+2:end);
 figure (3);
 tiledlayout(3,1, "TileSpacing", "tight")
 
+%Plot the fault chronology
 nexttile (3)
 box off
 hold on
