@@ -109,6 +109,8 @@ tempnorm = normalize(temp2, "range");
 %% Find peaks in the mean probability curve
 
 %Using the findpeaks function from MATLAB in both directions (left to right and right to left).
+%If you wish to manually change min_prom, deactivate lines 115 and 116 and replace the min_prom in
+%line 114 by your desired value.
 min_prom =max(outputs);
 min_prom(min_prom==0)=nan;
 min_prom =  (min(min_prom, [], "all")/2)/(max(outputs, [], "all"))/2;
