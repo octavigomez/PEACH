@@ -393,7 +393,7 @@ for rm = 1:size(final_plot, 1)
         "VerticalAlignment","baseline", "Rotation",90)
 end
 plot([means, means], [0, max(final_plot,[], "all")], "LineStyle", ":", "LineWidth", 0.1, "Color", "r")
-scatter (means, 0, "red", "filled", "o", SizeData=10);
+scatter (means, 0, "red", "filled", "o", "SizeData", 10);
 set(gca,  "xdir", "reverse")
 ylim([0 max(final_plot,[], "all")])
 xlim([min(time), max(time)]);
