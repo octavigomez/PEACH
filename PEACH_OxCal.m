@@ -339,8 +339,6 @@ final_plot = final_outputs(:,size(Event_count_combos,2)+2:end);
 figure (3);
 tiledlayout(3,1, "TileSpacing", "tight")
 
-%Plot the mean distribution.
-
 nexttile (3)
 box off
 hold on
@@ -432,6 +430,7 @@ set(gca, 'Layer', 'Top')
 set(gcf, 'Units', 'Normalized', 'OuterPosition', [0 0 0.4 0.8]);
 hold off
 
+%Plot the mean distribution.
 nexttile (2)
 subtitle ("Mean probability distribution")
 hold on
