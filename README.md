@@ -6,7 +6,7 @@ This work is part of a paper submitted to Earth and Planetary Sciences Letters c
 
 Authors: Octavi Gómez-Novell, Bruno Pace, Francesco Visini, Joanna Faure-Walker and Oona Scotti.
 
-This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds. We thank Yann Klinger, Paolo Boncio and Alessio Testa for sharing data to test our approach and for their useful insights during its development.
+This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds.
 
 ******
 
