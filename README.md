@@ -1,6 +1,16 @@
 # PEACH-Paleoseismic-EArthquake-CHronologies
 
-This code is designed to compute paleoearthquake chronologies from paleoseismic data, including site chronologies previously modelled with OxCal. Read the user manual in the main folder for details on how to run the code. The folder structure shown in the repository should not be changed.
+This code is designed to compute paleoearthquake chronologies from paleoseismic data, including site chronologies previously modelled with OxCal. 
+
+This work is part of a paper submitted to Earth and Planetary Sciences Letters called: "Deciphering past earthquakes from paleoseismic records – The Paleoseismic EArthquake CHronologies (PEACH) code".
+
+Authors: Octavi Gómez-Novell, Bruno Pace, Francesco Visini, Joanna Faure-Walker and Oona Scotti.
+
+This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds. We thank Yann Klinger, Paolo Boncio and Alessio Testa for sharing data to test our approach and for their useful insights during its development.
+
+******
+
+Read the user manual in the main folder for details on how to run the code. The folder structure shown in the repository should not be changed.
 
 The principal codes (PEACH.m and PEACH_Oxcal.m) use three scripts written by users external to this project that they shared freely in the MATLAB Central File Exchange.
 We provide them in the main folder of the repository as they are required for the code to work. The references to these scripts are:
