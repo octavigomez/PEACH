@@ -18,6 +18,6 @@ This work has been supported by two consecutive postdoctoral grants awarded to O
 
 ******
 
-SHARING
+LICENSING
 
-The code and derivatives are published under the Creative Commons license CC-BY-NC 4.0. For more info: https://creativecommons.org/licenses/by-nc/4.0/deed.es This means that you are free to copy, share and edit the material as long as you give credit to the authors, publish it under the same license and always for non-comercial purposes. Third party codes (see above) and their licenses must also be disclosed.
+The code and derivatives are published under the Creative Commons license CC-BY-NC 4.0. For more info: https://creativecommons.org/licenses/by-nc/4.0/deed.es This means that you are free to copy, share and edit the material as long as you give credit to the authors, publish it disclosing the same license and always for non-comercial purposes.
