@@ -2,7 +2,7 @@
 % This code is designed to use PEACH with OxCal output chronologies as inputs
 
 %Authors: Octavi Gómez, Bruno Pace, Francesco Visini, Joanna Faure Walker, Oona Scotti
-%Year: 2022-2023
+%Year: 2023
 
 %FUNDING
 %This work has been supported by two consecutive postdoctoral grants awarded to 
