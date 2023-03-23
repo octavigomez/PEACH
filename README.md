@@ -6,11 +6,19 @@ This work is part of a paper submitted to Earth and Planetary Sciences Letters c
 
 Authors: Octavi Gómez-Novell, Bruno Pace, Francesco Visini, Joanna Faure Walker and Oona Scotti.
 
-This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds.
+Funding: This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds.
+
+Read the user manual in the main folder for details on how to run the code. The folder structure shown in the repository should not be changed.
 
 ******
 
-Read the user manual in the main folder for details on how to run the code. The folder structure shown in the repository should not be changed.
+SHARING
+
+The code and derivatives are published under the Creative Commons license CC-BY-NC 4.0. For more info: https://creativecommons.org/licenses/by-nc/4.0/deed.es This means that you are free to copy, share and edit the material as long as you give credit to the authors, publish it under the same license and always for non-comercial purposes. Third party codes (see below) and their licenses must also be disclosed.
+
+******
+
+THIRD-PARTY CODES
 
 The principal codes (PEACH.m and PEACH_Oxcal.m) use one external script (allVL1; Bruno Luong, 2022) from the MATLAB Central File Exchange. This code generates all numeric combinations that add to a specified number, and it used to generate all combinations of paleoseismic events that add to the total amount of events in case of overlaps (see user manual).
 
