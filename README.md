@@ -6,9 +6,15 @@ This work is part of a paper submitted to Earth and Planetary Sciences Letters c
 
 Authors: Octavi Gómez-Novell, Bruno Pace, Francesco Visini, Joanna Faure Walker and Oona Scotti.
 
-Funding: This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds.
 
-Read the user manual in the main folder for details on how to run the code. The folder structure shown in the repository should not be changed.
+
+The user manual in the main folder contains details of the approach and guide on how to run the code. The folder structure shown in the repository should not be changed.
+
+******
+
+FUNDING
+
+This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Margarita Salas grant” funded by the University of Barcelona with EU’s “Next Generation” funds.
 
 ******
 
