@@ -22,9 +22,8 @@ THIRD-PARTY CODES
 
 The principal codes (PEACH.m and PEACH_Oxcal.m) use one external script (allVL1; Bruno Luong, 2022) from the MATLAB Central File Exchange. This code generates all numeric combinations that add to a specified number, and it used to generate all combinations of paleoseismic events that add to the total amount of events in case of overlaps (see user manual).
 
-IMPORTANT. Carefully read the license for the allVL1 code as detailed below.
+IMPORTANT. Carefully read the license for the allVL1 code as detailed below:
 
-******
 
 - allVL1 function: Bruno Luong (2022). All Permutations of integers with sum criteria (https://www.mathworks.com/matlabcentral/fileexchange/17818-all-permutations-of-integers-with-sum-criteria), MATLAB Central File Exchange. Retrieved November 25, 2022.
 
