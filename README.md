@@ -14,7 +14,7 @@ The user manual in the main folder contains details of the approach and guide on
 
 FUNDING
 
-This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Ayudas Margarita Salas para la formación de jóvenes doctores 2022” awarded by the University of Barcelona and funded by the Spanish Ministry of Universities with the European Union Next Generation funds.
+This work has been supported by two consecutive postdoctoral grants awarded to Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO Department (Università degli Studi “G. d’Annunzio” di Chieti e Pescara) and “Ayudas Margarita Salas para la formación de jóvenes doctores 2022” awarded by the University of Barcelona and funded by the Spanish Ministry of Universities with the EU “Next Generation” and “Plan de recuperación, transformación y resiliencia” programs
 
 ******
 
