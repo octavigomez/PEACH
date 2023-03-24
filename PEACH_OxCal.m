@@ -8,7 +8,8 @@
 %This work has been supported by two consecutive postdoctoral grants awarded to 
 % Octavi Gómez-Novell in 2022: “Borsa di studio n. 2341/2021” funded by the INGEO 
 % Department (Università degli Studi “G. d%Annunzio” di Chieti e Pescara) and “Margarita Salas
-% grant” funded by the University of Barcelona with EU’s “Next Generation” funds.
+% grant” awarded by the University of Barcelona and funded by the Spanish Ministry of Universities 
+% with the EU “Next Generation” and “Plan de recuperación, transformación y resiliencia” programs.
 
 %LICENSING
 %The code and derivatives are published under the Creative Commons license CC-BY-NC 4.0. 
