@@ -286,7 +286,7 @@ for group_ev= 1:length(n)
                 Comb = [Comb;zeros(1,len)+count_events/2];
             end
             is = sum(Comb,2)==count_events;
-            Comb = Comb(is,:)
+            Comb = Comb(is,:);
             Comb(any(Comb==0,2),:) =[];
             Comb = sortrows(Comb, 1);
          elseif count_events<=len
