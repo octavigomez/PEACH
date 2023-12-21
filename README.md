@@ -2,7 +2,7 @@
 
 This code is designed to compute paleoearthquake chronologies from paleoseismic data, including site chronologies previously modelled with OxCal. 
 
-This work is part of a paper submitted to Earth and Planetary Sciences Letters called: "Deciphering past earthquakes from paleoseismic records – The Paleoseismic EArthquake CHronologies (PEACH) code".
+This work is part of a paper published in Geoscientific Model Development called "Deciphering past earthquakes from the probabilistic modeling of paleoseismic records – the Paleoseismic EArthquake CHronologies code (PEACH, version 1)".
 
 Authors: Octavi Gómez-Novell, Bruno Pace, Francesco Visini, Joanna Faure Walker and Oona Scotti.
 
@@ -21,3 +21,9 @@ This work has been supported by two consecutive postdoctoral grants awarded to O
 LICENSING
 
 The code and derivatives are published under the Creative Commons license CC-BY-NC 4.0. For more info: https://creativecommons.org/licenses/by-nc/4.0/deed.es This means that you are free to copy, share and edit the material as long as you give credit to the authors, publish it disclosing the same license and always for non-comercial purposes.
+
+******
+
+RELATED PUBLICATION
+
+Gómez-Novell, O., Pace, B., Visini, F., Faure Walker, J., and Scotti, O. (2023). Deciphering past earthquakes from the probabilistic modeling of paleoseismic records – the Paleoseismic EArthquake CHronologies code (PEACH, version 1), Geoscientific Model Development, 16, 7339–7355, https://doi.org/10.5194/gmd-16-7339-2023
