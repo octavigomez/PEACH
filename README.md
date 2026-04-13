@@ -3,7 +3,7 @@
 This code is designed to compute paleoearthquake chronologies from paleoseismic data, including site chronologies previously modelled with OxCal. 
 
 This work is part of a paper published in Geoscientific Model Development called "Deciphering past earthquakes from the probabilistic modeling of paleoseismic records – the Paleoseismic EArthquake CHronologies code (PEACH, version 1)". 
-[![DOI](https://img.shields.io/badge/DOI-10.5194%gmd-16-7339-2023-yellow)](https://doi.org/10.5194/gmd-16-7339-2023)
+[![DOI](https://img.shields.io/badge/DOI-10.5194%2Fgmd--16--7339--2023-blue)](https://doi.org/10.5194/gmd-16-7339-2023)
 
 Authors: Octavi Gómez-Novell, Bruno Pace, Francesco Visini, Joanna Faure Walker and Oona Scotti.
 
